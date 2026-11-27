@@ -48,8 +48,11 @@ Chk W-41 'NTP시각동기화' {
 }
 Chk W-42 '이벤트로그관리' {
     $l = Get-WinEvent -ListLog Application, Security, System
-    $bad = $l | ? { $_.MaximumSizeInBytes -lt 10MB -or $_.FileSize -ge 0.9 * $_.MaximumSizeInBytes }      # 10MB 미만 또는 90% 이상 사용(덮어쓰는 중)
-    -not $bad; ($l | % { "$($_.LogName) $([int]($_.FileSize / 1MB))/$($_.MaximumSizeInBytes / 1MB)MB($($_.LogMode))" }) -join ', '
+    $o = Get-EventLog -List | ? { $_.Log -in 'Application', 'Security', 'System' }                                    # 덮어쓰기 설정(보존 일수)
+    $bad = $l | ? { $_.MaximumSizeInBytes -lt 10240KB -or $_.FileSize -ge 0.9 * $_.MaximumSizeInBytes }               # KISA 기준 10,240KB 미만, 또는 90% 이상 사용(90일 전에 덮어쓰는 중)
+    $ow = $o | ? { $_.OverflowAction -ne 'OverwriteOlder' -or $_.MinimumRetentionDays -ne 90 }                         # 90일 이후 이벤트 덮어쓰기가 아님
+    -not $bad -and -not $ow
+    ($l | % { $n = $_.LogName; $e = $o | ? Log -eq $n; "$n $([int]($_.FileSize / 1MB))/$($_.MaximumSizeInBytes / 1MB)MB, 덮어쓰기=$($e.OverflowAction)($($e.MinimumRetentionDays)일)" }) -join ', '
 }
 Chk W-63 '도메인시간동기화' { $null; "도메인 가입 - 시간원본=$(w32tm /query /source)" } (-not (Get-CimInstance Win32_ComputerSystem).PartOfDomain) '워크그룹 서버(도메인 미가입)'
 Chk W-35 'ODBC데이터소스' { $d = Get-OdbcDsn -EA 0; -not $d; 'ODBC 데이터 소스: ' + $(if ($d) { $d.Name -join ',' } else { '없음' }) }
@@ -70,3 +73,4 @@ $dir = 'C:\check\log'; New-Item $dir -ItemType Directory -Force | Out-Null
 $csv = "$dir\result_${file}_$(Get-Date -f 'yyMMdd_HHmm').csv"; $R | Export-Csv $csv -NoTypeInformation -Encoding UTF8
 Write-Host ("`n  " + (($R | Group-Object 결과 | % { "$($_.Name) $($_.Count)" }) -join '  /  '))
 Write-Host "`n▶ 저장 : $csv"; Write-Host '※ 수동확인 항목은 설정을 직접 검토해 판정' -ForegroundColor Yellow
+ 
