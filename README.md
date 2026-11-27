@@ -76,12 +76,6 @@ KISA 『주요정보통신기반시설 기술적 취약점 분석·평가 상세
 | `scripts/windows/Check-C-Service.ps1` | 네트워크·서비스 (W-18~34, 36, 44, 64) |
 | `scripts/windows/Check-D-System.ps1` | 패치·로그·시스템 (W-27, 35, 37~42, 45, 62, 63) |
 
-### 조치 (Windows — PowerShell)
-
-| 스크립트 | 내용 |
-|---|---|
-| `scripts/windows/Fix-1-Safe.ps1` | 서비스 영향이 작은 16개 항목 일괄 조치 (W-04·08·09·10·11·15·20·33·40·42·47·51·53·54·57·59). 변경 전 설정 자동 백업 |
-
 > 패치 관리(U-64)는 방화벽 아웃바운드 차단으로 `dnf` 저장소 접근이 불가해 **수동 점검**(스크립트 미포함). Linux 자동 점검 스크립트는 66개 항목 대상이며, 합계 67은 수동 점검 1건 포함.
 
 ### 사용법
@@ -94,13 +88,10 @@ sudo bash scripts/linux/Account_check.sh
 ```powershell
 # Windows (관리자 PowerShell) — 결과: C:\check\log\*.csv
 powershell -ExecutionPolicy Bypass -File .\scripts\windows\Check-A-Account.ps1
-# 조치 (변경 전 자동 백업)
-powershell -ExecutionPolicy Bypass -File .\scripts\windows\Fix-1-Safe.ps1
 ```
 
 - 점검 1건을 `chk()`(Bash) / `Chk`(PowerShell) 헬퍼로 실행해 **양호·취약·수동확인·해당없음**을 자동 판정, CSV 저장.
-- 점검 스크립트는 **읽기 전용**(설정 미변경) — 조치 전·후 2회 실행해 개선 효과 검증.
-- 조치 스크립트는 변경 전 설정을 **자동 백업**(`C:\check\backup`).
+- 스크립트는 **읽기 전용**(설정 미변경) — 조치 전·후 2회 실행해 개선 효과 검증.
 
 ---
 
