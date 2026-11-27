@@ -63,9 +63,9 @@ KISA 『주요정보통신기반시설 기술적 취약점 분석·평가 상세
 | 스크립트 | 점검 범위 |
 |---|---|
 | `scripts/linux/Account_check.sh` | 계정 관리 (U-01~U-06) |
-| `scripts/linux/File_check.sh` | 파일·디렉터리 관리 (U-14~U-30) |
+| `scripts/linux/File_check.sh` | 파일·디렉터리 관리 — 주요 항목 (U-14~27, 30, 33) |
 | `scripts/linux/Service_check.sh` | 서비스 관리 (U-34~U-63) |
-| `scripts/linux/Rest_check.sh` | 잔여 항목 (계정 U-07~13 / 파일 U-28~33 / 로그 U-65~67) |
+| `scripts/linux/Rest_check.sh` | 잔여 항목 (계정 U-07~13 / 파일 U-28·29·31·32 / 로그 U-65~67) |
 
 **Windows — PowerShell**
 
